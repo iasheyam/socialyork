@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/*
+ * SocialYork palette and type scale.
+ *
+ * Design direction: deep true black, no chromatic accent. The only colour move
+ * is a warm bone white for text instead of pure white, and one inverted screen
+ * (the Guarantee) on bone paper. The hero video is the only colour on the page.
+ */
+@theme {
+  --color-void: #000000;
+  --color-surface: #0b0b0b;
+  --color-hairline: #1c1b18;
+  --color-ink: #ece7db;
+  --color-ink-dim: #8f8a7e;
+  --color-ink-faint: #56524a;
+
+  --color-paper: #e9e4d8;
+  --color-paper-ink: #0c0b09;
+  --color-paper-dim: #55514a;
+
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-hanken), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-void);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* On the bone sections, flip focus ring to dark so it stays visible. */
+[data-tone="paper"] *:focus-visible {
+  outline-color: var(--color-paper-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
