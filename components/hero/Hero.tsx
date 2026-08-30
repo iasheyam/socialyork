@@ -64,7 +64,7 @@ export function Hero() {
   const clip = site.hero.clips[0];
 
   const inSequence = mode === "sequence";
-  const black = mode === "blackout" || (inSequence && step === 3);
+  const black = inSequence && step === 3;
   const showMedia = mode === "static" || (inSequence && step < 3);
   const showVideo = inSequence && step < 3;
   const showLineOne = mode === "static" || (inSequence && step >= 1 && step < 3);
