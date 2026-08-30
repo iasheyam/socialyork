@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { site } from "@/content/site";
 import { cn } from "@/lib/cn";
 import { useHeroSequence } from "./useHeroSequence";
@@ -8,9 +8,13 @@ import { useHeroSequence } from "./useHeroSequence";
 const LINE =
   "block font-display leading-[1.04] tracking-[-0.02em] text-[clamp(2.25rem,6vw,5.25rem)] transition-[opacity,transform] duration-[650ms] ease-out";
 
+const RESOLVE =
+  "block max-w-[16ch] font-display leading-[1.05] tracking-[-0.02em] text-[clamp(2rem,5vw,4.25rem)]";
+
 /**
- * One clip in the hero montage. The clips are stacked and cross-cut by toggling
- * `active` -- a hard opacity swap, no transition, so the cut reads as a cut.
+ * One clip in the hero montage. All clips stay playing and looping; the montage
+ * crossfades between them by toggling `active` (opacity, ~700ms), looping
+ * 1 -> 2 -> 3 -> 1 forever.
  *
  * Autoplay needs the `muted` DOM *property* set before play() is called; React
  * does not reliably reflect the `muted` JSX prop, so we set it on the ref and
@@ -33,43 +37,44 @@ function HeroVideo({
     if (!video) return;
     video.muted = true;
     video.defaultMuted = true;
-    if (eager) return;
-    const id = window.setTimeout(() => {
-      video.preload = "auto";
-      video.load();
-    }, 700);
-    return () => window.clearTimeout(id);
-  }, [eager]);
 
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    if (active) {
-      try {
-        video.currentTime = 0;
-      } catch {
-        /* not seekable yet -- it will still play */
-      }
+    const play = () => {
       const attempt = video.play();
       if (attempt && typeof attempt.catch === "function") {
         attempt.catch(() => {
           /* autoplay refused -- poster frame stands in */
         });
       }
-    } else {
-      video.pause();
+    };
+
+    video.addEventListener("canplay", play, { once: true });
+
+    if (eager) {
+      play();
+      return () => video.removeEventListener("canplay", play);
     }
-  }, [active]);
+
+    const id = window.setTimeout(() => {
+      video.preload = "auto";
+      video.load();
+      play();
+    }, 700);
+    return () => {
+      window.clearTimeout(id);
+      video.removeEventListener("canplay", play);
+    };
+  }, [eager]);
 
   return (
     <video
       ref={ref}
       className={cn(
-        "absolute inset-0 h-full w-full object-cover",
+        "absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out",
         active ? "opacity-100" : "opacity-0",
       )}
       muted
       playsInline
+      loop
       preload={eager ? "auto" : "none"}
       poster={`/video/${clip}.jpg`}
       tabIndex={-1}
@@ -80,19 +85,39 @@ function HeroVideo({
   );
 }
 
+/** Fades in on mount so the resolve line arrives rather than snapping on. */
+function ResolveLine({ text }: { text: string }) {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  return (
+    <span
+      className={cn(
+        RESOLVE,
+        "transition-opacity duration-[1100ms] ease-out",
+        shown ? "opacity-100" : "opacity-0",
+      )}
+    >
+      {text}
+    </span>
+  );
+}
+
 export function Hero() {
   const clips = site.hero.clips;
-  const { mode, step, clipIndex } = useHeroSequence(clips.length);
+  const { mode, textStage, clipIndex } = useHeroSequence(clips.length);
   const [lineOne, lineTwo] = site.hero.lines;
   const posterClip = clips[0];
 
-  const inSequence = mode === "sequence";
-  const black = inSequence && step === 3;
-  const showMedia = mode === "static" || (inSequence && step < 3);
-  const showVideo = inSequence && step < 3;
-  const showLineOne = mode === "static" || (inSequence && step >= 1 && step < 3);
-  const showLineTwo = mode === "static" || (inSequence && step >= 2 && step < 3);
-  const showResolve = !inSequence || step === 3;
+  const isStatic = mode === "static";
+  const resolved = textStage === 3;
+
+  const showBuildLines = isStatic || !resolved;
+  const showLineOne = isStatic || textStage >= 1;
+  const showLineTwo = isStatic || textStage >= 2;
+  const showResolve = isStatic || resolved;
 
   return (
     <section
@@ -100,35 +125,25 @@ export function Hero() {
       aria-label={site.meta.name}
       className="relative h-[100svh] min-h-[560px] w-full overflow-hidden bg-void"
     >
-      {/* Media layer. Poster paints on first paint; video layers over it. */}
-      <div
-        aria-hidden
-        className={cn(
-          "absolute inset-0 transition-opacity duration-150 ease-linear",
-          black ? "opacity-0" : "opacity-100",
-        )}
-      >
-        {showMedia && (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`/video/${posterClip}.jpg`}
-              alt=""
-              fetchPriority="high"
-              className="absolute inset-0 h-full w-full object-cover"
+      {/* Media layer. Poster paints first; the clips crossfade in a loop. */}
+      <div aria-hidden className="absolute inset-0">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/video/${posterClip}.jpg`}
+          alt=""
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        {!isStatic &&
+          clips.map((clip, i) => (
+            <HeroVideo
+              key={clip}
+              clip={clip}
+              active={i === clipIndex}
+              eager={i === 0}
             />
-            {showVideo &&
-              clips.map((clip, i) => (
-                <HeroVideo
-                  key={clip}
-                  clip={clip}
-                  active={i === clipIndex}
-                  eager={i === 0}
-                />
-              ))}
-            <div className="absolute inset-0 bg-gradient-to-t from-void/85 via-void/25 to-void/10" />
-          </>
-        )}
+          ))}
+        <div className="absolute inset-0 bg-gradient-to-t from-void/85 via-void/25 to-void/10" />
       </div>
 
       {/* Type layer, bottom-left anchored. */}
@@ -139,7 +154,7 @@ export function Hero() {
           </h1>
 
           <div aria-hidden className="text-ink">
-            {!black && (
+            {showBuildLines && (
               <div className="space-y-1">
                 <span
                   className={cn(
@@ -164,15 +179,13 @@ export function Hero() {
               </div>
             )}
 
-            <span
-              className={cn(
-                "mt-[0.35em] block max-w-[18ch] font-display leading-[1.04] tracking-[-0.02em] text-[clamp(2.25rem,6vw,5.25rem)]",
-                "transition-opacity duration-[1100ms] ease-out",
-                showResolve ? "opacity-100" : "opacity-0",
-              )}
-            >
-              {site.hero.resolve}
-            </span>
+            {isStatic ? (
+              <span className={cn(RESOLVE, "mt-[0.35em]")}>
+                {site.hero.resolve}
+              </span>
+            ) : showResolve ? (
+              <ResolveLine text={site.hero.resolve} />
+            ) : null}
           </div>
         </div>
       </div>

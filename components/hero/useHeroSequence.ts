@@ -10,31 +10,33 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
  *  - "static"   poster frame with all three lines resolved. Reduced motion,
  *               no-JS, and (this phase) anything below desktop. A deliberate
  *               good-looking state, not a degraded one.
- *  - "sequence" desktop with motion allowed: dense footage that cuts between
- *               clips, two lines, hard stop, resolve. Runs on every visit.
+ *  - "sequence" desktop with motion allowed: the clips crossfade in a
+ *               continuous loop (1 -> 2 -> 3 -> 1 ...) while the two lines land
+ *               and then resolve. The footage never stops.
  *
- * Scroll is never locked. Any scroll / key intent during the sequence cuts
- * straight to the resolved state.
+ * Scroll is never locked. Any scroll / key intent during the sequence jumps
+ * the text straight to the resolved line.
  */
 
 export type HeroMode = "static" | "sequence";
-export type HeroStep = 0 | 1 | 2 | 3;
+/** 0 no lines, 1 line one, 2 both lines, 3 resolved (lines out, resolve in) */
+export type TextStage = 0 | 1 | 2 | 3;
 
 const DESKTOP_QUERY = "(min-width: 1024px)";
 const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
 
 const T_LINE_ONE = 900;
 const T_LINE_TWO = 3400;
-const T_HARD_STOP = 6600;
-/** how long each clip holds before the cut to the next */
-const T_CLIP = 2200;
+const T_RESOLVE = 6500;
+/** how long each clip holds before it crossfades to the next */
+const T_CLIP = 2600;
 
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 export interface HeroSequence {
   mode: HeroMode;
-  step: HeroStep;
+  textStage: TextStage;
   clipIndex: number;
   resolveNow: () => void;
 }
@@ -43,56 +45,60 @@ export function useHeroSequence(clipCount: number): HeroSequence {
   // SSR / first paint: the static resolved state. Safe with no JS, and
   // corrected before paint by the layout effect below when JS runs.
   const [mode, setMode] = useState<HeroMode>("static");
-  const [step, setStep] = useState<HeroStep>(0);
+  const [textStage, setTextStage] = useState<TextStage>(0);
   const [clipIndex, setClipIndex] = useState(0);
   const timers = useRef<number[]>([]);
-  const settled = useRef(false);
+  const clipTimer = useRef<number | null>(null);
+  const resolved = useRef(false);
 
   const clearTimers = () => {
     timers.current.forEach((t) => window.clearTimeout(t));
     timers.current = [];
+    if (clipTimer.current !== null) {
+      window.clearTimeout(clipTimer.current);
+      clipTimer.current = null;
+    }
   };
 
   const resolveNow = () => {
-    if (settled.current) return;
-    settled.current = true;
-    clearTimers();
-    setStep(3);
+    if (resolved.current) return;
+    resolved.current = true;
+    timers.current.forEach((t) => window.clearTimeout(t));
+    timers.current = [];
+    setTextStage(3);
   };
 
   useIsoLayoutEffect(() => {
     const reduced = window.matchMedia(REDUCED_QUERY).matches;
     const desktop = window.matchMedia(DESKTOP_QUERY).matches;
 
-    if (reduced || !desktop) {
+    if (reduced || !desktop || clipCount === 0) {
       setMode("static");
-      setStep(0);
+      setTextStage(0);
       setClipIndex(0);
       return;
     }
 
     setMode("sequence");
-    setStep(0);
+    setTextStage(0);
     setClipIndex(0);
 
-    // Cut through the clips one after another, stopping on the last one so it
-    // holds until the hard stop -- no wrap-around flash.
+    // Continuous loop through the clips: 1 -> 2 -> 3 -> 1 -> ...
     let current = 0;
     const advanceClip = () => {
-      if (current >= clipCount - 1) return;
-      current += 1;
+      current = (current + 1) % clipCount;
       setClipIndex(current);
-      timers.current.push(window.setTimeout(advanceClip, T_CLIP));
+      clipTimer.current = window.setTimeout(advanceClip, T_CLIP);
     };
+    clipTimer.current = window.setTimeout(advanceClip, T_CLIP);
 
     timers.current.push(
-      window.setTimeout(advanceClip, T_CLIP),
-      window.setTimeout(() => setStep(1), T_LINE_ONE),
-      window.setTimeout(() => setStep(2), T_LINE_TWO),
+      window.setTimeout(() => setTextStage(1), T_LINE_ONE),
+      window.setTimeout(() => setTextStage(2), T_LINE_TWO),
       window.setTimeout(() => {
-        settled.current = true;
-        setStep(3);
-      }, T_HARD_STOP),
+        resolved.current = true;
+        setTextStage(3);
+      }, T_RESOLVE),
     );
 
     const cut = () => resolveNow();
@@ -118,5 +124,5 @@ export function useHeroSequence(clipCount: number): HeroSequence {
     };
   }, [clipCount]);
 
-  return { mode, step, clipIndex, resolveNow };
+  return { mode, textStage, clipIndex, resolveNow };
 }
