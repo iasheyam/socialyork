@@ -9,11 +9,23 @@ const LINE =
   "block font-display leading-[1.04] tracking-[-0.02em] text-[clamp(2.25rem,6vw,5.25rem)] transition-[opacity,transform] duration-[650ms] ease-out";
 
 /**
- * Autoplay needs the `muted` DOM *property* set before play() is called. React
- * does not reliably reflect the `muted` JSX prop to the element, so set it on a
- * ref and kick playback ourselves; browsers otherwise block the autoplay.
+ * One clip in the hero montage. The clips are stacked and cross-cut by toggling
+ * `active` -- a hard opacity swap, no transition, so the cut reads as a cut.
+ *
+ * Autoplay needs the `muted` DOM *property* set before play() is called; React
+ * does not reliably reflect the `muted` JSX prop, so we set it on the ref and
+ * kick playback ourselves. Non-eager clips defer loading until the first clip
+ * is under way ("lazy-loaded past the first clip").
  */
-function HeroVideo({ clip }: { clip: string }) {
+function HeroVideo({
+  clip,
+  active,
+  eager,
+}: {
+  clip: string;
+  active: boolean;
+  eager: boolean;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -21,34 +33,44 @@ function HeroVideo({ clip }: { clip: string }) {
     if (!video) return;
     video.muted = true;
     video.defaultMuted = true;
+    if (eager) return;
+    const id = window.setTimeout(() => {
+      video.preload = "auto";
+      video.load();
+    }, 700);
+    return () => window.clearTimeout(id);
+  }, [eager]);
 
-    const play = () => {
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    if (active) {
+      try {
+        video.currentTime = 0;
+      } catch {
+        /* not seekable yet -- it will still play */
+      }
       const attempt = video.play();
       if (attempt && typeof attempt.catch === "function") {
         attempt.catch(() => {
           /* autoplay refused -- poster frame stands in */
         });
       }
-    };
-
-    play();
-    video.addEventListener("loadeddata", play, { once: true });
-    video.addEventListener("canplay", play, { once: true });
-    return () => {
-      video.removeEventListener("loadeddata", play);
-      video.removeEventListener("canplay", play);
-    };
-  }, []);
+    } else {
+      video.pause();
+    }
+  }, [active]);
 
   return (
     <video
       ref={ref}
-      className="absolute inset-0 h-full w-full object-cover"
-      autoPlay
+      className={cn(
+        "absolute inset-0 h-full w-full object-cover",
+        active ? "opacity-100" : "opacity-0",
+      )}
       muted
       playsInline
-      loop
-      preload="auto"
+      preload={eager ? "auto" : "none"}
       poster={`/video/${clip}.jpg`}
       tabIndex={-1}
     >
@@ -59,9 +81,10 @@ function HeroVideo({ clip }: { clip: string }) {
 }
 
 export function Hero() {
-  const { mode, step } = useHeroSequence();
+  const clips = site.hero.clips;
+  const { mode, step, clipIndex } = useHeroSequence(clips.length);
   const [lineOne, lineTwo] = site.hero.lines;
-  const clip = site.hero.clips[0];
+  const posterClip = clips[0];
 
   const inSequence = mode === "sequence";
   const black = inSequence && step === 3;
@@ -89,12 +112,20 @@ export function Hero() {
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`/video/${clip}.jpg`}
+              src={`/video/${posterClip}.jpg`}
               alt=""
               fetchPriority="high"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            {showVideo && <HeroVideo clip={clip} />}
+            {showVideo &&
+              clips.map((clip, i) => (
+                <HeroVideo
+                  key={clip}
+                  clip={clip}
+                  active={i === clipIndex}
+                  eager={i === 0}
+                />
+              ))}
             <div className="absolute inset-0 bg-gradient-to-t from-void/85 via-void/25 to-void/10" />
           </>
         )}
