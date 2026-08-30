@@ -1,11 +1,62 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { site } from "@/content/site";
 import { cn } from "@/lib/cn";
 import { useHeroSequence } from "./useHeroSequence";
 
 const LINE =
   "block font-display leading-[1.04] tracking-[-0.02em] text-[clamp(2.25rem,6vw,5.25rem)] transition-[opacity,transform] duration-[650ms] ease-out";
+
+/**
+ * Autoplay needs the `muted` DOM *property* set before play() is called. React
+ * does not reliably reflect the `muted` JSX prop to the element, so set it on a
+ * ref and kick playback ourselves; browsers otherwise block the autoplay.
+ */
+function HeroVideo({ clip }: { clip: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+
+    const play = () => {
+      const attempt = video.play();
+      if (attempt && typeof attempt.catch === "function") {
+        attempt.catch(() => {
+          /* autoplay refused -- poster frame stands in */
+        });
+      }
+    };
+
+    play();
+    video.addEventListener("loadeddata", play, { once: true });
+    video.addEventListener("canplay", play, { once: true });
+    return () => {
+      video.removeEventListener("loadeddata", play);
+      video.removeEventListener("canplay", play);
+    };
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      className="absolute inset-0 h-full w-full object-cover"
+      autoPlay
+      muted
+      playsInline
+      loop
+      preload="auto"
+      poster={`/video/${clip}.jpg`}
+      tabIndex={-1}
+    >
+      <source src={`/video/${clip}.webm`} type="video/webm" />
+      <source src={`/video/${clip}.mp4`} type="video/mp4" />
+    </video>
+  );
+}
 
 export function Hero() {
   const { mode, step } = useHeroSequence();
@@ -43,21 +94,7 @@ export function Hero() {
               fetchPriority="high"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            {showVideo && (
-              <video
-                className="absolute inset-0 h-full w-full object-cover"
-                autoPlay
-                muted
-                playsInline
-                loop
-                preload="auto"
-                poster={`/video/${clip}.jpg`}
-                tabIndex={-1}
-              >
-                <source src={`/video/${clip}.webm`} type="video/webm" />
-                <source src={`/video/${clip}.mp4`} type="video/mp4" />
-              </video>
-            )}
+            {showVideo && <HeroVideo clip={clip} />}
             <div className="absolute inset-0 bg-gradient-to-t from-void/85 via-void/25 to-void/10" />
           </>
         )}

@@ -32,6 +32,14 @@ const T_HARD_STOP = 6400;
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
+function markSeen() {
+  try {
+    window.localStorage.setItem(SEEN_KEY, "1");
+  } catch {
+    /* storage blocked -- sequence will simply run again next visit */
+  }
+}
+
 export interface HeroSequence {
   mode: HeroMode;
   step: HeroStep;
@@ -55,15 +63,21 @@ export function useHeroSequence(): HeroSequence {
     if (settled.current) return;
     settled.current = true;
     clearTimers();
+    markSeen();
     setStep(3);
   };
 
   useIsoLayoutEffect(() => {
     const reduced = window.matchMedia(REDUCED_QUERY).matches;
     const desktop = window.matchMedia(DESKTOP_QUERY).matches;
+
+    // `?replay` forces the full sequence -- handy for reviewing the hero without
+    // clearing storage or opening a private window.
+    const replay = new URLSearchParams(window.location.search).has("replay");
+
     let seen = false;
     try {
-      seen = window.localStorage.getItem(SEEN_KEY) === "1";
+      seen = !replay && window.localStorage.getItem(SEEN_KEY) === "1";
     } catch {
       /* storage blocked -- treat as first visit */
     }
@@ -81,12 +95,6 @@ export function useHeroSequence(): HeroSequence {
       return;
     }
 
-    try {
-      window.localStorage.setItem(SEEN_KEY, "1");
-    } catch {
-      /* ignore */
-    }
-
     setMode("sequence");
     setStep(0);
     timers.current.push(
@@ -94,6 +102,7 @@ export function useHeroSequence(): HeroSequence {
       window.setTimeout(() => setStep(2), T_LINE_TWO),
       window.setTimeout(() => {
         settled.current = true;
+        markSeen();
         setStep(3);
       }, T_HARD_STOP),
     );
