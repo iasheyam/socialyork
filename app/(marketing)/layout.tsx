@@ -1,5 +1,5 @@
 import { SiteFooter } from "@/components/SiteFooter";
-import { Wordmark } from "@/components/Wordmark";
+import { SiteHeader } from "@/components/SiteHeader";
 
 export default function MarketingLayout({
   children,
@@ -8,7 +8,7 @@ export default function MarketingLayout({
 }) {
   return (
     <>
-      <Wordmark />
+      <SiteHeader />
       <main>{children}</main>
       <SiteFooter />
     </>
