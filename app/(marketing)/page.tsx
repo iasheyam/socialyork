@@ -2,7 +2,8 @@ import { Hero } from "@/components/hero/Hero";
 import { Clients } from "@/components/sections/Clients";
 import { Closing } from "@/components/sections/Closing";
 import { Guarantee } from "@/components/sections/Guarantee";
-import { NetworkCards } from "@/components/sections/NetworkCards";
+// Influencer cards hidden for now -- re-enable when the network data is ready.
+// import { NetworkCards } from "@/components/sections/NetworkCards";
 import { Positioning } from "@/components/sections/Positioning";
 import { ReelCarousel } from "@/components/sections/ReelCarousel";
 import { Service } from "@/components/sections/Service";
@@ -17,7 +18,8 @@ export default function Page() {
         <ReelCarousel />
       </Service>
       <Service service={site.services[1]}>
-        <NetworkCards />
+        {/* Influencer cards hidden for now -- re-enable when the network data is ready. */}
+        {/* <NetworkCards /> */}
       </Service>
       <Guarantee />
       <Clients />
