@@ -22,7 +22,7 @@ export function SiteHeader() {
   return (
     <header
       data-visible={visible}
-      className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-gradient-to-b from-void/75 to-void/45 px-6 backdrop-blur-xl backdrop-saturate-150 transition-transform duration-500 ease-out data-[visible=false]:-translate-y-full data-[visible=true]:translate-y-0 motion-reduce:transition-none sm:px-10 lg:px-16"
+      className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.05] bg-gradient-to-b from-void/55 to-void/20 px-6 backdrop-blur-2xl backdrop-saturate-150 transition-transform duration-500 ease-out data-[visible=false]:-translate-y-full data-[visible=true]:translate-y-0 motion-reduce:transition-none sm:px-10 lg:px-16"
     >
       <div className="mx-auto flex h-14 max-w-5xl items-center">
         <a
