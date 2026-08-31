@@ -5,9 +5,9 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // Hero footage and posters are content-addressed by filename; a swap is
-        // a new deploy. Cache them hard at the edge.
-        source: "/video/:path*",
+        // Hero footage/posters and reel covers are content-addressed by
+        // filename; a swap is a new deploy. Cache them hard at the edge.
+        source: "/:dir(video|reels)/:path*",
         headers: [
           {
             key: "Cache-Control",

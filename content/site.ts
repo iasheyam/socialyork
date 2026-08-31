@@ -32,6 +32,8 @@ export interface Creator {
 export interface Reel {
   /** public Instagram permalink, e.g. https://www.instagram.com/reel/XXXX/ */
   url: string;
+  /** cover image under /public/reels -- clicking the card opens `url` on Instagram */
+  cover: string;
 }
 
 export interface Client {
@@ -71,9 +73,9 @@ export interface SiteContent {
   positioning: Paragraph[];
   services: ServiceSection[];
   /**
-   * Reel carousel under Service 01. Uses Instagram's official embed, loaded only
-   * when the section nears the viewport. Until Isti supplies real permalinks the
-   * items are [DEMO: ...] tokens and render as placeholder slides.
+   * Reel carousel under Service 01. Each slide is a self-hosted cover image that
+   * links out to the reel on Instagram -- no Instagram embed, no third-party JS.
+   * Covers live in /public/reels.
    */
   reels: {
     label: string;
@@ -156,11 +158,11 @@ export const site: SiteContent = {
     label: "Recent work",
     note: "",
     items: [
-      { url: "https://www.instagram.com/p/DcbjJxPiVjT/" },
-      { url: "https://www.instagram.com/p/DbwRn7FTfW1/" },
-      { url: "https://www.instagram.com/p/DcJuhblD_v8/" },
-      { url: "https://www.instagram.com/p/DcOrIscEZfr/" },
-      { url: "https://www.instagram.com/p/DcbjL2pkQA_/" },
+      { url: "https://www.instagram.com/p/DcbjJxPiVjT/", cover: "/reels/reel-01.jpg" },
+      { url: "https://www.instagram.com/p/DbwRn7FTfW1/", cover: "/reels/reel-02.jpg" },
+      { url: "https://www.instagram.com/p/DcJuhblD_v8/", cover: "/reels/reel-03.jpg" },
+      { url: "https://www.instagram.com/p/DcOrIscEZfr/", cover: "/reels/reel-04.jpg" },
+      { url: "https://www.instagram.com/p/DcbjL2pkQA_/", cover: "/reels/reel-05.jpg" },
     ],
   },
 
