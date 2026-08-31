@@ -72,7 +72,10 @@ export function ReelCarousel() {
   return (
     <div className="pt-6">
       <div className="mb-4 flex items-center justify-between gap-4">
-        <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-ink-faint">
+        <p
+          data-eyebrow
+          className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-gold"
+        >
           {label}
         </p>
         <div className="flex gap-2">

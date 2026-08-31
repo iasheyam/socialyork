@@ -3,9 +3,9 @@
 /*
  * SocialYork palette and type scale.
  *
- * Design direction: deep true black, no chromatic accent. The only colour move
- * is a warm bone white for text instead of pure white, and one inverted screen
- * (the Guarantee) on bone paper. The hero video is the only colour on the page.
+ * Design direction: deep true black, warm bone white for text instead of pure
+ * white, and one inverted screen (the Guarantee) on bone paper. One chromatic
+ * accent: a muted gold on the mono eyebrow labels.
  */
 @theme {
   --color-void: #000000;
@@ -14,6 +14,8 @@
   --color-ink: #ece7db;
   --color-ink-dim: #8f8a7e;
   --color-ink-faint: #56524a;
+
+  --color-gold: #c8a253;
 
   --color-paper: #e9e4d8;
   --color-paper-ink: #0c0b09;
@@ -56,6 +58,11 @@ body {
 /* On the bone sections, flip focus ring to dark so it stays visible. */
 [data-tone="paper"] *:focus-visible {
   outline-color: var(--color-paper-ink);
+}
+
+/* Gold has no contrast on bone -- keep the eyebrow dark on the paper section. */
+[data-tone="paper"] [data-eyebrow] {
+  color: color-mix(in oklab, var(--color-paper-ink) 55%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

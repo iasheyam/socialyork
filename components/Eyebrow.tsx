@@ -12,13 +12,14 @@ export function Eyebrow({
 }) {
   return (
     <p
+      data-eyebrow
       className={cn(
-        "flex items-baseline gap-3 font-mono text-[0.7rem] uppercase tracking-[0.24em] text-current/55",
+        "flex items-baseline gap-3 font-mono text-[0.7rem] uppercase tracking-[0.24em] text-gold",
         className,
       )}
     >
       {index ? (
-        <span className="tabular-nums text-current/35">{index}</span>
+        <span className="tabular-nums opacity-55">{index}</span>
       ) : null}
       <span>{children}</span>
     </p>
