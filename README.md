@@ -34,6 +34,7 @@ content/
   site.ts              ALL copy and numbers. Nothing lives in JSX.
 lib/
   data.ts              data-access seam for the portal — empty for now
+  instagram.ts         lazy loader for the Instagram embed script
 public/video/          hero-01..03 as .mp4 + .webm + .jpg poster (placeholders)
 ```
 
@@ -50,6 +51,11 @@ The site must not claim the footage is SocialYork's own work.
 
 **Client logos**: drop files in `public/logos/`, then set each `logo` path in
 `content/site.ts` (`clients.items`). The name-only placeholder disappears.
+
+**Reel carousel** (Content Marketing): set real Instagram permalinks in
+`content/site.ts` (`reels.items`, e.g. `https://www.instagram.com/reel/XXXX/`).
+Non-`[DEMO:]` URLs render as official Instagram embeds; `embed.js` loads only
+when the carousel nears the viewport.
 
 **Long Island address**: set `site.address` in `content/site.ts` — the footer
 picks it up. Off by default (per the brief).
