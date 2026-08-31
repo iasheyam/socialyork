@@ -29,6 +29,11 @@ export interface Creator {
   followers: string;
 }
 
+export interface Reel {
+  /** public Instagram permalink, e.g. https://www.instagram.com/reel/XXXX/ */
+  url: string;
+}
+
 export interface Client {
   name: string;
   /** one number per client -- a redemption count or a platform metric, never an estimate */
@@ -65,6 +70,16 @@ export interface SiteContent {
   };
   positioning: Paragraph[];
   services: ServiceSection[];
+  /**
+   * Reel carousel under Service 01. Uses Instagram's official embed, loaded only
+   * when the section nears the viewport. Until Isti supplies real permalinks the
+   * items are [DEMO: ...] tokens and render as placeholder slides.
+   */
+  reels: {
+    label: string;
+    note: string;
+    items: Reel[];
+  };
   network: {
     /** [DEMO: creator-handles] -- four sample cards. Handles are deliberately fake. */
     note: string;
@@ -136,6 +151,18 @@ export const site: SiteContent = {
       ],
     },
   ],
+
+  reels: {
+    label: "Recent work",
+    note: "[DEMO: reels]",
+    items: [
+      { url: "[DEMO: reel-url-1]" },
+      { url: "[DEMO: reel-url-2]" },
+      { url: "[DEMO: reel-url-3]" },
+      { url: "[DEMO: reel-url-4]" },
+      { url: "[DEMO: reel-url-5]" },
+    ],
+  },
 
   network: {
     note: `Sample cards ${EMDASH} not live network data.`,
