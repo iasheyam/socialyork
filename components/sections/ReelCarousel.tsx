@@ -123,9 +123,11 @@ export function ReelCarousel() {
         })}
       </ul>
 
-      <p className="mt-3 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-ink-faint">
-        <Demo>{note}</Demo> reel permalinks live in content/site.ts
-      </p>
+      {note ? (
+        <p className="mt-3 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-ink-faint">
+          <Demo>{note}</Demo>
+        </p>
+      ) : null}
     </div>
   );
 }

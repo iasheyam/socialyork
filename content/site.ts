@@ -154,13 +154,13 @@ export const site: SiteContent = {
 
   reels: {
     label: "Recent work",
-    note: "[DEMO: reels]",
+    note: "",
     items: [
-      { url: "[DEMO: reel-url-1]" },
-      { url: "[DEMO: reel-url-2]" },
-      { url: "[DEMO: reel-url-3]" },
-      { url: "[DEMO: reel-url-4]" },
-      { url: "[DEMO: reel-url-5]" },
+      { url: "https://www.instagram.com/p/DcbjJxPiVjT/" },
+      { url: "https://www.instagram.com/p/DbwRn7FTfW1/" },
+      { url: "https://www.instagram.com/p/DcJuhblD_v8/" },
+      { url: "https://www.instagram.com/p/DcOrIscEZfr/" },
+      { url: "https://www.instagram.com/p/DcbjL2pkQA_/" },
     ],
   },
 
