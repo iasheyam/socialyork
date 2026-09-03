@@ -87,6 +87,16 @@ export interface SiteContent {
     note: string;
     creators: Creator[];
   };
+  /**
+   * Secondary capabilities listed after Service 02. Kept deliberately light --
+   * names only, optional one-line note each. Not one of the two flagship
+   * services, so no index and no display headline per item.
+   */
+  otherServices: {
+    label: string;
+    lead: string;
+    items: { name: string; note?: string }[];
+  };
   guarantee: {
     index: string;
     label: string;
@@ -173,6 +183,17 @@ export const site: SiteContent = {
       { handle: "@demo.creator.two", vertical: "[DEMO: vertical]", followers: "[DEMO: 000K]" },
       { handle: "@demo.creator.three", vertical: "[DEMO: vertical]", followers: "[DEMO: 000K]" },
       { handle: "@demo.creator.four", vertical: "[DEMO: vertical]", followers: "[DEMO: 000K]" },
+    ],
+  },
+
+  otherServices: {
+    label: "Other services",
+    lead: "Other things we do for the businesses we work with.",
+    items: [
+      { name: "Website development" },
+      { name: "Google Business Profile" },
+      { name: "AI automation" },
+      { name: "Paid advertising" },
     ],
   },
 

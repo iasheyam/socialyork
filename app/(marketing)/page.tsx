@@ -4,6 +4,7 @@ import { Closing } from "@/components/sections/Closing";
 import { Guarantee } from "@/components/sections/Guarantee";
 // Influencer cards hidden for now -- re-enable when the network data is ready.
 // import { NetworkCards } from "@/components/sections/NetworkCards";
+import { OtherServices } from "@/components/sections/OtherServices";
 import { Positioning } from "@/components/sections/Positioning";
 import { ReelCarousel } from "@/components/sections/ReelCarousel";
 import { Service } from "@/components/sections/Service";
@@ -21,6 +22,7 @@ export default function Page() {
         {/* Influencer cards hidden for now -- re-enable when the network data is ready. */}
         {/* <NetworkCards /> */}
       </Service>
+      <OtherServices />
       <Guarantee />
       <Clients />
       <Closing />
