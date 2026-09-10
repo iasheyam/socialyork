@@ -38,10 +38,28 @@ export interface Reel {
 
 export interface Client {
   name: string;
-  /** one number per client -- a redemption count or a platform metric, never an estimate */
-  result: string;
+  /** neighbourhood or street, shown under the name */
+  location: string | null;
+  /**
+   * Headline result, rendered as a gold stat block. null shows just the name,
+   * location and reel. Numbers must be measured, never estimated.
+   */
+  result: {
+    /** the number itself, e.g. "+$100" or "3x" */
+    stat: string;
+    /** what it measures, e.g. "average ticket -- last 3 months" */
+    caption: string;
+    /** one or two plain sentences of context */
+    story: string;
+  } | null;
   /** path under /public/logos once real logos land; null renders a name placeholder */
   logo: string | null;
+  /**
+   * Embed URL for the reel shown above the name (9:16). Currently Google Drive
+   * `/preview` links, e.g. https://drive.google.com/file/d/<id>/preview.
+   * null renders a placeholder frame.
+   */
+  video: string | null;
 }
 
 export interface SiteContent {
@@ -89,13 +107,14 @@ export interface SiteContent {
   };
   /**
    * Secondary capabilities listed after Service 02. Kept deliberately light --
-   * names only, optional one-line note each. Not one of the two flagship
+   * name, one-line subtitle, and a line icon each. Not one of the two flagship
    * services, so no index and no display headline per item.
+   * `icon` is a key into ICONS in components/sections/OtherServices.tsx.
    */
   otherServices: {
     label: string;
     lead: string;
-    items: { name: string; note?: string }[];
+    items: { name: string; subtitle: string; icon: string }[];
   };
   guarantee: {
     index: string;
@@ -123,7 +142,7 @@ export const site: SiteContent = {
     domain: "socialyork.com",
     title: `SocialYork ${EMDASH} We make sure your brand is heard`,
     description:
-      "SocialYork produces content and runs an influencer network for New York businesses, on tracking codes you can count. We commit to a referred-client number in writing.",
+      "Content and an influencer network for New York businesses, run on tracking codes you can count. We commit to a referred-client number in writing.",
   },
   contact: {
     email: "hello@socialyork.com",
@@ -140,8 +159,8 @@ export const site: SiteContent = {
   },
 
   positioning: [
-    `Most businesses here aren't invisible because they're not good. They're invisible because nobody is producing for them at the volume the platforms demand ${EMDASH} and because posting is not the same as being seen.`,
-    "We do both halves. We make the work, and we make sure it reaches people who walk through your door.",
+    `You're not invisible because you're not good. You're invisible because nobody's producing for you at the volume the platforms reward ${EMDASH} and posting isn't the same as being seen.`,
+    "We make the work, and we make sure it reaches people who'll walk through your door.",
   ],
 
   services: [
@@ -150,8 +169,8 @@ export const site: SiteContent = {
       label: "Content Marketing",
       title: "We produce, you don't.",
       body: [
-        `We shoot on location at your business [DEMO: shoot-days] days a month and deliver [DEMO: content-volume] pieces of content across four pillars ${EMDASH} education, story, promotion, and photography. Captions, posting times, links, hashtags, and tracking codes come with every piece, scheduled in advance.`,
-        "We run the accounts across Instagram, TikTok, and Facebook, or we hand you the library and the schedule and you run them. Either works.",
+        `We produce [DEMO: content-volume] pieces a month and keep your channels posting ${EMDASH} so the business gets seen without you touching a camera or a caption.`,
+        "We run the accounts across Instagram, TikTok, and Facebook, or hand you the library to run yourself.",
       ],
     },
     {
@@ -159,7 +178,7 @@ export const site: SiteContent = {
       label: "Influencer Network",
       title: "A room full of people who already have the audience you want.",
       body: [
-        `We work with a network of [DEMO: creator-count] creators across [DEMO: creator-verticals]. We match you to the ones whose audience overlaps yours, brief them, and run their posts on the same tracking codes as everything else ${EMDASH} so an influencer post is a number you can count, not a favor you hope worked.`,
+        `[DEMO: creator-count] creators across [DEMO: creator-verticals]. We match you to the ones whose followers are already your customers and run their posts on your tracking codes ${EMDASH} a number you can count, not a favor you hope worked.`,
       ],
     },
   ],
@@ -188,12 +207,28 @@ export const site: SiteContent = {
 
   otherServices: {
     label: "Other services",
-    lead: "Other things we do for the businesses we work with.",
+    lead: "We also handle:",
     items: [
-      { name: "Website development" },
-      { name: "Google Business Profile" },
-      { name: "AI automation" },
-      { name: "Paid advertising" },
+      {
+        name: "Website development",
+        subtitle: "Sites that turn your content's traffic into customers.",
+        icon: "code",
+      },
+      {
+        name: "Google Business Profile",
+        subtitle: "Set up and maintained so you show in local search and Maps.",
+        icon: "pin",
+      },
+      {
+        name: "AI automation",
+        subtitle: `Replies, follow-ups, and scheduling ${EMDASH} automated.`,
+        icon: "sparkle",
+      },
+      {
+        name: "Paid advertising",
+        subtitle: "Meta and Google campaigns, on the same tracking codes.",
+        icon: "megaphone",
+      },
     ],
   },
 
@@ -202,20 +237,42 @@ export const site: SiteContent = {
     label: "The Guarantee",
     title: "We commit to a number, in writing.",
     body: [
-      `Every campaign runs on codes we issue. When someone redeems one, that's a client we sent you ${EMDASH} counted, not estimated.`,
-      "Over a 90-day trial we commit to [DEMO: guarantee-number] referred clients. If we come up short, you get the difference back, pro rata. You can take it as a refund or convert it into service credit. It's in the contract, not the pitch.",
+      `Every campaign runs on codes we issue. A redeemed code is a client we sent you ${EMDASH} counted, not estimated.`,
+      `Over a 90-day trial we commit to [DEMO: guarantee-number] referred clients. Come up short and you get the difference back, pro rata ${EMDASH} as a refund or service credit. It's in the contract, not the pitch.`,
     ],
   },
 
   clients: {
     label: "Clients",
-    lead: "Every number here is a redemption count or a platform metric. None of it is an estimate.",
+    lead: "Measured numbers, from their books and ad accounts. Nothing estimated.",
     logoNote: "[DEMO: client-logos]",
     items: [
-      { name: "Bon Bon Salon", result: "[DEMO: client-result-1]", logo: null },
-      { name: "Catalia Beauty", result: "[DEMO: client-result-2]", logo: null },
-      { name: "Spartan Grills", result: "[DEMO: client-result-3]", logo: null },
-      { name: "IT Trattoria", result: "[DEMO: client-result-4]", logo: null },
+      {
+        name: "Bon Bon Salon and Spa",
+        location: "Madison Ave, Manhattan, New York",
+        result: {
+          stat: "+$100",
+          caption: "average ticket — last 3 months",
+          story:
+            "We turned Bon Bon's offline reputation into an online following, then into repeat business — more visits, higher spend each time. All organic, no ad budget.",
+        },
+        logo: null,
+        video:
+          "https://drive.google.com/file/d/1zPjXJBhlfm8ybJPwAQyh7mEJRnmCpcun/preview",
+      },
+      {
+        name: "Century Beauty Group",
+        location: "Soho, Manhattan, New York",
+        result: {
+          stat: "3×",
+          caption: "more customers than before",
+          story:
+            "We built Century Beauty Group's brand loyalty from scratch with interactive educational video, not ads — and the customers followed.",
+        },
+        logo: null,
+        video:
+          "https://drive.google.com/file/d/1cNPOJsdsc7fLZMVZAOUq47QxUJuvxMvM/preview",
+      },
     ],
   },
 
