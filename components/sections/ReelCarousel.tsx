@@ -139,7 +139,7 @@ export function ReelCarousel({ content }: { content: ReelCarouselContent }) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={item.cover}
-                    alt=""
+                    alt={`${label} — Instagram reel ${i + 1}`}
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                   />

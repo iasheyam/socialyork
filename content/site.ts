@@ -172,9 +172,9 @@ export const site: SiteContent = {
   meta: {
     name: "SocialYork",
     domain: "socialyork.com",
-    title: `SocialYork ${EMDASH} We tell your brand's story`,
+    title: `SocialYork ${EMDASH} Social Media Marketing Agency in New York City`,
     description:
-      "Content and an influencer network for New York businesses, run on tracking codes you can count. We commit to a referred-client number in writing.",
+      "Content marketing and influencer partnerships for New York businesses. Every metric tracked and reported, from views to actual conversion — real growth, not vanity numbers.",
   },
   contact: {
     email: "hello@socialyork.com",

@@ -3,26 +3,23 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /**
- * Hero sequence state machine, kept separate from layout so a reduced mobile
- * version can be dropped in later without touching this file.
+ * Hero sequence state machine, kept separate from layout.
  *
  * Modes:
- *  - "static"   poster frame with all three lines resolved. Reduced motion,
- *               no-JS, and (this phase) anything below desktop. A deliberate
- *               good-looking state, not a degraded one.
- *  - "sequence" desktop with motion allowed: the clips crossfade in a
+ *  - "static"   poster frame with all three lines resolved. Reduced motion or
+ *               no-JS only. A deliberate good-looking state, not a degraded one.
+ *  - "sequence" motion allowed (any screen size): the clips crossfade in a
  *               continuous loop (1 -> 2 -> 3 -> 1 ...) while the two lines land
  *               and then resolve. The footage never stops.
  *
- * Scroll is never locked. Any scroll / key intent during the sequence jumps
- * the text straight to the resolved line.
+ * Scroll is never locked. Any scroll / key / touch intent during the sequence
+ * jumps the text straight to the resolved line.
  */
 
 export type HeroMode = "static" | "sequence";
 /** 0 no lines, 1 line one, 2 both lines, 3 resolved (lines out, resolve in) */
 export type TextStage = 0 | 1 | 2 | 3;
 
-const DESKTOP_QUERY = "(min-width: 1024px)";
 const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
 
 const T_LINE_ONE = 900;
@@ -70,9 +67,8 @@ export function useHeroSequence(clipCount: number): HeroSequence {
 
   useIsoLayoutEffect(() => {
     const reduced = window.matchMedia(REDUCED_QUERY).matches;
-    const desktop = window.matchMedia(DESKTOP_QUERY).matches;
 
-    if (reduced || !desktop || clipCount === 0) {
+    if (reduced || clipCount === 0) {
       setMode("static");
       setTextStage(0);
       setClipIndex(0);
