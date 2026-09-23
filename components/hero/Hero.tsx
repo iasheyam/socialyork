@@ -9,7 +9,14 @@ const LINE =
   "block font-display leading-[1.04] tracking-[-0.02em] text-[clamp(2.25rem,6vw,5.25rem)] transition-[opacity,transform] duration-[650ms] ease-out";
 
 const RESOLVE =
-  "block max-w-[16ch] font-display leading-[1.05] tracking-[-0.02em] text-[clamp(2rem,5vw,4.25rem)]";
+  "block font-display leading-[1.05] tracking-[-0.02em] text-[clamp(2rem,5vw,4.25rem)] transition-[opacity,transform] duration-[650ms] ease-out";
+
+/** SocialYork line: same type, but as a highlighted mark -- paper block behind the name. */
+const RESOLVE_HIGHLIGHT =
+  "inline-block bg-paper px-3 py-0.5 font-display leading-[1.05] tracking-[-0.02em] text-[clamp(2rem,5vw,4.25rem)] text-paper-ink transition-[opacity,transform] duration-[650ms] ease-out";
+
+/** Gap between the two resolve lines landing, mirroring the build lines' beat. */
+const RESOLVE_STAGGER = 500;
 
 /**
  * One clip in the hero montage. All clips stay playing and looping; the montage
@@ -85,23 +92,39 @@ function HeroVideo({
   );
 }
 
-/** Fades in on mount so the resolve line arrives rather than snapping on. */
-function ResolveLine({ text }: { text: string }) {
-  const [shown, setShown] = useState(false);
+/**
+ * Resolve lines land on mount, one after the other -- the same slide-up-and-fade
+ * as the two build lines, not a group fade.
+ */
+function ResolveLine({ lines }: { lines: [string, string] }) {
+  const [shown, setShown] = useState<0 | 1 | 2>(0);
   useEffect(() => {
-    const id = requestAnimationFrame(() => setShown(true));
-    return () => cancelAnimationFrame(id);
+    const raf = requestAnimationFrame(() => setShown(1));
+    const timer = window.setTimeout(() => setShown(2), RESOLVE_STAGGER);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
   }, []);
   return (
-    <span
-      className={cn(
-        RESOLVE,
-        "transition-opacity duration-[1100ms] ease-out",
-        shown ? "opacity-100" : "opacity-0",
-      )}
-    >
-      {text}
-    </span>
+    <div className="space-y-1">
+      <span
+        className={cn(
+          RESOLVE_HIGHLIGHT,
+          shown >= 1 ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+        )}
+      >
+        {lines[0]}
+      </span>
+      <span
+        className={cn(
+          RESOLVE,
+          shown >= 2 ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+        )}
+      >
+        {lines[1]}
+      </span>
+    </div>
   );
 }
 
@@ -114,7 +137,6 @@ export function Hero() {
   const isStatic = mode === "static";
   const resolved = textStage === 3;
 
-  const showBuildLines = isStatic || !resolved;
   const showLineOne = isStatic || textStage >= 1;
   const showLineTwo = isStatic || textStage >= 2;
   const showResolve = isStatic || resolved;
@@ -146,45 +168,51 @@ export function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-void/85 via-void/25 to-void/10" />
       </div>
 
-      {/* Type layer, bottom-left anchored. */}
+      <h1 className="sr-only">
+        {lineOne} {lineTwo} {site.hero.resolve.join(" ")}
+      </h1>
+
+      {/* Type layer, top-left anchored: the two build lines, staying on screen once shown. */}
+      <div className="absolute inset-x-0 top-0 px-6 pt-8 sm:px-10 sm:pt-10 lg:px-16 lg:pt-14">
+        <div className="mx-auto max-w-5xl">
+          <div aria-hidden className="space-y-1 text-ink">
+            <span
+              className={cn(
+                LINE,
+                showLineOne
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0",
+              )}
+            >
+              {lineOne}
+            </span>
+            <span
+              className={cn(
+                LINE,
+                showLineTwo
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0",
+              )}
+            >
+              {lineTwo}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Type layer, bottom-left anchored: the resolve lines. */}
       <div className="absolute inset-x-0 bottom-0 px-6 pb-8 sm:px-10 sm:pb-10 lg:px-16 lg:pb-14">
         <div className="mx-auto max-w-5xl">
-          <h1 className="sr-only">
-            {lineOne} {lineTwo} {site.hero.resolve}
-          </h1>
-
           <div aria-hidden className="text-ink">
-            {showBuildLines && (
-              <div className="space-y-1">
-                <span
-                  className={cn(
-                    LINE,
-                    showLineOne
-                      ? "translate-y-0 opacity-100"
-                      : "translate-y-4 opacity-0",
-                  )}
-                >
-                  {lineOne}
-                </span>
-                <span
-                  className={cn(
-                    LINE,
-                    showLineTwo
-                      ? "translate-y-0 opacity-100"
-                      : "translate-y-4 opacity-0",
-                  )}
-                >
-                  {lineTwo}
-                </span>
-              </div>
-            )}
-
             {isStatic ? (
-              <span className={cn(RESOLVE, "mt-[0.35em]")}>
-                {site.hero.resolve}
-              </span>
+              <div className="space-y-1">
+                <span className={RESOLVE_HIGHLIGHT}>
+                  {site.hero.resolve[0]}
+                </span>
+                <span className={RESOLVE}>{site.hero.resolve[1]}</span>
+              </div>
             ) : showResolve ? (
-              <ResolveLine text={site.hero.resolve} />
+              <ResolveLine lines={site.hero.resolve} />
             ) : null}
           </div>
         </div>

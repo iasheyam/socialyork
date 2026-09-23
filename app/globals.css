@@ -30,6 +30,10 @@
   color-scheme: dark;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   height: 100%;
@@ -49,6 +53,17 @@ body {
   color: var(--color-void);
 }
 
+/*
+ * The default highlight (bone bg, black text) is tuned for the void sections.
+ * On paper sections that highlight is nearly the same tone as the page itself,
+ * so selection reads as invisible/washed-out -- flip to a gold highlight with
+ * black text instead.
+ */
+[data-tone="paper"] ::selection {
+  background: var(--color-gold);
+  color: var(--color-paper-ink);
+}
+
 *:focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: 3px;
@@ -63,6 +78,11 @@ body {
 /* Gold has no contrast on bone -- keep the eyebrow dark on the paper section. */
 [data-tone="paper"] [data-eyebrow] {
   color: color-mix(in oklab, var(--color-paper-ink) 55%, transparent);
+}
+
+/* Same contrast problem for any other gold accent (e.g. client stat numbers). */
+[data-tone="paper"] [data-stat] {
+  color: var(--color-paper-ink);
 }
 
 @media (prefers-reduced-motion: reduce) {

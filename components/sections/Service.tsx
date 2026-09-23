@@ -7,10 +7,28 @@ import type { ServiceSection } from "@/content/site";
 export function Service({
   service,
   children,
+  hideHeader = false,
 }: {
   service: ServiceSection;
   children?: React.ReactNode;
+  /**
+   * Skip the eyebrow/title/body -- use when that content is already shown by
+   * something upstream (e.g. HowWeDoItReveal), so this just carries the
+   * section id/padding for whatever comes after it (like the reel carousel).
+   */
+  hideHeader?: boolean;
 }) {
+  if (hideHeader) {
+    return (
+      <Section
+        id={`service-${service.index}`}
+        className="pt-10 md:pt-12 lg:pt-12"
+      >
+        {children}
+      </Section>
+    );
+  }
+
   return (
     <Section id={`service-${service.index}`}>
       <Reveal className="space-y-9">

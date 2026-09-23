@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Demo } from "@/components/Demo";
 import { Eyebrow } from "@/components/Eyebrow";
 import { Reveal } from "@/components/Reveal";
 import { Section } from "@/components/Section";
@@ -55,15 +56,23 @@ function ServiceIcon({ name }: { name: string }) {
  * no index -- so the hierarchy reads: 01 and 02 are the pitch, this is scope.
  */
 export function OtherServices() {
-  const { label, lead, items } = site.otherServices;
+  const { label, title, body, items } = site.otherServices;
   return (
     <Section id="other-services">
       <Reveal className="space-y-9">
         <Eyebrow>{label}</Eyebrow>
 
-        <p className="max-w-2xl font-display leading-[1.3] text-[clamp(1.35rem,2.6vw,2rem)] text-current/85">
-          {lead}
-        </p>
+        <h2 className="max-w-3xl font-display leading-[1.06] tracking-[-0.02em] text-[clamp(2rem,5vw,3.75rem)]">
+          {title}
+        </h2>
+
+        <div className="max-w-2xl space-y-5 text-[1.05rem] leading-relaxed text-current/65">
+          {body.map((paragraph, i) => (
+            <p key={i}>
+              <Demo>{paragraph}</Demo>
+            </p>
+          ))}
+        </div>
 
         <ul className="grid max-w-3xl grid-cols-1 gap-x-12 sm:grid-cols-2">
           {items.map((item) => (

@@ -73,6 +73,7 @@ export interface SiteContent {
     email: string;
     phone: string;
     phoneHref: string;
+    instagram: string;
   };
   /**
    * Long Island business address is on the contract. Per the brief it stays off
@@ -82,13 +83,20 @@ export interface SiteContent {
   address: string | null;
   hero: {
     lines: [string, string];
-    resolve: string;
+    resolve: [string, string];
     /** basenames in /public/video -- each exists as .webm, .mp4 and .jpg poster */
     clips: string[];
     /** [DEMO: hero-video] -- placeholder NYC footage; final is licensed stock */
     footageNote: string;
   };
-  positioning: Paragraph[];
+  positioning: {
+    title: string;
+    paragraphs: Paragraph[];
+  };
+  /** Full-screen pinned beat between the argument and the services. */
+  howWeDoIt: {
+    heading: string;
+  };
   services: ServiceSection[];
   /**
    * Reel carousel under Service 01. Each slide is a self-hosted cover image that
@@ -96,6 +104,12 @@ export interface SiteContent {
    * Covers live in /public/reels.
    */
   reels: {
+    label: string;
+    note: string;
+    items: Reel[];
+  };
+  /** Same carousel, reused under Service 02 for content made with influencers. */
+  influencerReels: {
     label: string;
     note: string;
     items: Reel[];
@@ -113,7 +127,8 @@ export interface SiteContent {
    */
   otherServices: {
     label: string;
-    lead: string;
+    title: string;
+    body: Paragraph[];
     items: { name: string; subtitle: string; icon: string }[];
   };
   guarantee: {
@@ -124,13 +139,30 @@ export interface SiteContent {
   };
   clients: {
     label: string;
-    lead: string;
+    title: string;
+    body: Paragraph[];
     /** [DEMO: client-logos] */
     logoNote: string;
     items: Client[];
   };
   closing: {
     heading: string;
+    body: string;
+  };
+  /** /influencers -- dedicated application page linked from the header's "Join as Influencer". */
+  influencerApply: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    submitLabel: string;
+    successHeading: string;
+    successBody: string;
+  };
+  /** Lead form under the Closing/Contact section. */
+  contactForm: {
+    submitLabel: string;
+    successHeading: string;
+    successBody: string;
   };
 }
 
@@ -140,7 +172,7 @@ export const site: SiteContent = {
   meta: {
     name: "SocialYork",
     domain: "socialyork.com",
-    title: `SocialYork ${EMDASH} We make sure your brand is heard`,
+    title: `SocialYork ${EMDASH} We tell your brand's story`,
     description:
       "Content and an influencer network for New York businesses, run on tracking codes you can count. We commit to a referred-client number in writing.",
   },
@@ -148,37 +180,44 @@ export const site: SiteContent = {
     email: "hello@socialyork.com",
     phone: "480 743 2551",
     phoneHref: "+14807432551",
+    instagram: "https://www.instagram.com/social_york/",
   },
   address: null,
 
   hero: {
-    lines: ["New York City is busy.", "Your brand needs to be heard."],
-    resolve: "SocialYork. We make sure yours is.",
+    lines: ["New York City is noisy.", "Your brand has a story worth hearing."],
+    resolve: ["SocialYork.", "We tell your brand's story."],
     clips: ["hero-01", "hero-02", "hero-03"],
     footageNote: "[DEMO: hero-video]",
   },
 
-  positioning: [
-    `You're not invisible because you're not good. You're invisible because nobody's producing for you at the volume the platforms reward ${EMDASH} and posting isn't the same as being seen.`,
-    "We make the work, and we make sure it reaches people who'll walk through your door.",
-  ],
+  positioning: {
+    title: "We bring you sales. Guaranteed.",
+    paragraphs: [
+      "Your customers are already on social media. You're missing out on them.",
+      "We build content that earns trust and gets you chosen, and back the sales with a guarantee, in writing.",
+    ],
+  },
+
+  howWeDoIt: {
+    heading: "How do we do it?",
+  },
 
   services: [
     {
       index: "01",
       label: "Content Marketing",
-      title: "We produce, you don't.",
+      title: "Planning, Publishing, Promoting - Fully Managed",
       body: [
-        `We produce [DEMO: content-volume] pieces a month and keep your channels posting ${EMDASH} so the business gets seen without you touching a camera or a caption.`,
-        "We run the accounts across Instagram, TikTok, and Facebook, or hand you the library to run yourself.",
+        "With 9 years of experience building six brands, we create interactive content around real customer problems: content people save and share instead of scrolling past. Our content strategy, paid advertising, and sales funnel, run by people and AI, deliver results.",
       ],
     },
     {
       index: "02",
-      label: "Influencer Network",
-      title: "A room full of people who already have the audience you want.",
+      label: "Influencer Marketing",
+      title: "Influencers who already have your audience.",
       body: [
-        `[DEMO: creator-count] creators across [DEMO: creator-verticals]. We match you to the ones whose followers are already your customers and run their posts on your tracking codes ${EMDASH} a number you can count, not a favor you hope worked.`,
+        `We work with over 200 influencers. We connect the right ones with your brand, and they share their real experience with their audience ${EMDASH} building trust and referrals for your business.`,
       ],
     },
   ],
@@ -187,11 +226,26 @@ export const site: SiteContent = {
     label: "Recent work",
     note: "",
     items: [
-      { url: "https://www.instagram.com/p/DcbjJxPiVjT/", cover: "/reels/reel-01.jpg" },
-      { url: "https://www.instagram.com/p/DbwRn7FTfW1/", cover: "/reels/reel-02.jpg" },
-      { url: "https://www.instagram.com/p/DcJuhblD_v8/", cover: "/reels/reel-03.jpg" },
-      { url: "https://www.instagram.com/p/DcOrIscEZfr/", cover: "/reels/reel-04.jpg" },
-      { url: "https://www.instagram.com/p/DcbjL2pkQA_/", cover: "/reels/reel-05.jpg" },
+      { url: "https://www.instagram.com/reel/DdmqElaRPrB/", cover: "/reels/reel-01.jpg" },
+      { url: "https://www.instagram.com/reel/DdkLM74RbaT/", cover: "/reels/reel-02.jpg" },
+      { url: "https://www.instagram.com/reel/DdkEDhfRLP7/", cover: "/reels/reel-03.jpg" },
+      { url: "https://www.instagram.com/reel/Ddb2oH1xTDi/", cover: "/reels/reel-04.jpg" },
+      { url: "https://www.instagram.com/reel/DdHvQIQM-8M/", cover: "/reels/reel-05.jpg" },
+      { url: "https://www.instagram.com/reel/DcysggOxEXA/", cover: "/reels/reel-06.jpg" },
+      { url: "https://www.instagram.com/reel/DcbjJxPiVjT/", cover: "/reels/reel-07.jpg" },
+      { url: "https://www.instagram.com/reel/DcmWg2gt4Rg/", cover: "/reels/reel-08.jpg" },
+      { url: "https://www.instagram.com/reel/DcOrIscEZfr/", cover: "/reels/reel-09.jpg" },
+      { url: "https://www.instagram.com/reel/DbwRn7FTfW1/", cover: "/reels/reel-10.jpg" },
+    ],
+  },
+
+  influencerReels: {
+    label: "Influencer content",
+    note: "",
+    items: [
+      { url: "https://www.instagram.com/p/DdZxww_Eajx/", cover: "/reels/influencer-01.jpg" },
+      { url: "https://www.instagram.com/p/DdhajX3swVt/", cover: "/reels/influencer-02.jpg" },
+      { url: "https://www.instagram.com/p/DbwRn7FTfW1/", cover: "/reels/reel-10.jpg" },
     ],
   },
 
@@ -206,8 +260,11 @@ export const site: SiteContent = {
   },
 
   otherServices: {
-    label: "Other services",
-    lead: "We also handle:",
+    label: "360 Growth Solution",
+    title: "Everything else your business needs to grow.",
+    body: [
+      `A website that converts, a Google listing that gets you found, AI that replies and follows up while you're busy, and ads that reach the right people ${EMDASH} we handle every other piece so your growth doesn't stall.`,
+    ],
     items: [
       {
         name: "Website development",
@@ -234,18 +291,21 @@ export const site: SiteContent = {
 
   guarantee: {
     index: "03",
-    label: "The Guarantee",
-    title: "We commit to a number, in writing.",
+    label: "Reporting",
+    title: "Every result, tracked and reported.",
     body: [
-      `Every campaign runs on codes we issue. A redeemed code is a client we sent you ${EMDASH} counted, not estimated.`,
-      `Over a 90-day trial we commit to [DEMO: guarantee-number] referred clients. Come up short and you get the difference back, pro rata ${EMDASH} as a refund or service credit. It's in the contract, not the pitch.`,
+      `We measure every metric that matters ${EMDASH} views, engagement, leads, and actual conversion ${EMDASH} not just the numbers that look good.`,
+      "When the funnel underperforms, we fix it, and train your team to convert more of what comes in. You see the real ROI, not a vanity report.",
     ],
   },
 
   clients: {
-    label: "Clients",
-    lead: "Measured numbers, from their books and ad accounts. Nothing estimated.",
-    logoNote: "[DEMO: client-logos]",
+    label: "Top Clients",
+    title: "Success stories, backed by numbers.",
+    body: [
+      "More customers, more revenue, more repeat business — growth you can see and measure.",
+    ],
+    logoNote: "",
     items: [
       {
         name: "Bon Bon Salon and Spa",
@@ -277,6 +337,22 @@ export const site: SiteContent = {
   },
 
   closing: {
-    heading: "The conversation already started in person.",
+    heading: "Let's talk.",
+    body: "Book a free consultation with our founders.",
+  },
+
+  influencerApply: {
+    eyebrow: "Join as Influencer",
+    title: "Turn your following into paid partnerships.",
+    body: `We connect creators with New York brands looking for real partnerships ${EMDASH} no cold pitching, no guesswork. Tell us about your audience and we'll reach out when there's a fit.`,
+    submitLabel: "Submit application",
+    successHeading: "Got it.",
+    successBody: "We'll review your application and reach out if there's a fit.",
+  },
+
+  contactForm: {
+    submitLabel: "Submit",
+    successHeading: "Got it.",
+    successBody: "We'll be in touch shortly.",
   },
 };

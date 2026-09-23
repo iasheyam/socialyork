@@ -25,10 +25,13 @@ export function Section({
       id={id}
       data-tone={tone === "paper" ? "paper" : undefined}
       className={cn(
-        "scroll-mt-16 px-6 sm:px-10 lg:px-16",
+        "px-6 sm:px-10 lg:px-16",
         center
-          ? "flex min-h-[92svh] items-center py-24 md:py-28"
-          : "py-24 md:py-36 lg:py-44",
+          ? // Content is vertically centered, well clear of the top edge already --
+            // no scroll-margin needed, and adding one would reveal a sliver of
+            // whatever section comes before this one when jumped to directly.
+            "flex min-h-[92svh] scroll-mt-0 items-center py-24 md:py-28"
+          : "scroll-mt-16 py-24 md:py-36 lg:py-44",
         tone === "paper" ? "bg-paper text-paper-ink" : "bg-void text-ink",
         className,
       )}

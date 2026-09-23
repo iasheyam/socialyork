@@ -5,9 +5,9 @@ import { Section } from "@/components/Section";
 import { site } from "@/content/site";
 
 /**
- * The strongest thing on the page, so it is the only inverted screen: bone
- * paper, black type, set larger than the service sections. That contrast is the
- * structural distinction -- no badge, no box.
+ * One of the inverted (bone paper, black type) screens, set larger than the
+ * service sections -- that contrast is the structural distinction, no badge,
+ * no box.
  */
 export function Guarantee() {
   const { index, label, title, body } = site.guarantee;

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Demo } from "@/components/Demo";
-import { site } from "@/content/site";
+import type { Reel } from "@/content/site";
 
 function Chevron({ dir }: { dir: "left" | "right" }) {
   return (
@@ -34,9 +34,15 @@ function PlayGlyph() {
   );
 }
 
-/** Carousel of Instagram reels under Service 01 (Content Marketing). */
-export function ReelCarousel() {
-  const { label, note, items } = site.reels;
+interface ReelCarouselContent {
+  label: string;
+  note: string;
+  items: Reel[];
+}
+
+/** Carousel of Instagram reels -- reused under both Service 01 and Service 02. */
+export function ReelCarousel({ content }: { content: ReelCarouselContent }) {
+  const { label, note, items } = content;
   const trackRef = useRef<HTMLUListElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);

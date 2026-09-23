@@ -6,35 +6,53 @@ import { Section } from "@/components/Section";
 import { site } from "@/content/site";
 
 export function Clients() {
-  const { label, lead, logoNote, items } = site.clients;
+  const { label, title, body, logoNote, items } = site.clients;
   return (
-    <Section id="clients">
+    <Section
+      id="clients"
+      tone="paper"
+      className="pt-10 pb-16 md:pt-14 md:pb-20 lg:pt-16 lg:pb-24"
+    >
       <Reveal className="space-y-10">
         <Eyebrow>{label}</Eyebrow>
 
-        <p className="max-w-2xl font-display leading-[1.3] text-[clamp(1.35rem,2.6vw,2rem)] text-current/85">
-          {lead}
-        </p>
+        <h2 className="max-w-3xl font-display leading-[1.06] tracking-[-0.02em] text-[clamp(2rem,5vw,3.75rem)]">
+          {title}
+        </h2>
 
-        <ul className="flex flex-wrap gap-x-10 gap-y-12">
+        <div className="max-w-2xl space-y-5 text-[1.05rem] leading-relaxed text-current/65">
+          {body.map((paragraph, i) => (
+            <p key={i}>
+              <Demo>{paragraph}</Demo>
+            </p>
+          ))}
+        </div>
+
+        <ul className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:flex-wrap sm:snap-none sm:gap-x-10 sm:gap-y-12 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden">
           {items.map((client) => (
-            <li key={client.name} className="w-full max-w-[320px] space-y-4">
+            <li
+              key={client.name}
+              className="w-[280px] shrink-0 snap-start space-y-4 sm:w-full sm:max-w-[320px] sm:shrink"
+            >
               <ClientReel client={client} />
               <div className="space-y-1">
-                <p className="font-display text-lg text-ink">{client.name}</p>
+                <p className="font-display text-lg text-current">{client.name}</p>
                 {client.location ? (
-                  <p className="text-[0.8rem] text-ink-dim">{client.location}</p>
+                  <p className="text-[0.8rem] text-current/60">{client.location}</p>
                 ) : null}
               </div>
               {client.result ? (
                 <div className="space-y-2 pt-1">
-                  <p className="font-display text-3xl leading-none text-gold">
+                  <p
+                    data-stat
+                    className="font-display text-3xl leading-none text-gold"
+                  >
                     {client.result.stat}
                   </p>
-                  <p className="font-mono text-[0.66rem] uppercase tracking-[0.14em] text-ink-dim">
+                  <p className="font-mono text-[0.66rem] uppercase tracking-[0.14em] text-current/60">
                     {client.result.caption}
                   </p>
-                  <p className="pt-1 text-sm leading-relaxed text-ink-dim">
+                  <p className="pt-1 text-sm leading-relaxed text-current/60">
                     {client.result.story}
                   </p>
                 </div>
@@ -44,7 +62,7 @@ export function Clients() {
         </ul>
 
         {logoNote ? (
-          <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-ink-faint">
+          <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-current/40">
             <Demo>{logoNote}</Demo>
           </p>
         ) : null}
