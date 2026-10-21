@@ -1,3 +1,4 @@
+import Script from "next/script";
 import { Hero } from "@/components/hero/Hero";
 import { Clients } from "@/components/sections/Clients";
 import { Closing } from "@/components/sections/Closing";
@@ -15,6 +16,14 @@ import { site } from "@/content/site";
 export default function Page() {
   return (
     <>
+      {/* LeadConnector chat widget -- home page only. */}
+      <Script
+        src="https://widgets.leadconnectorhq.com/loader.js"
+        data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
+        data-widget-id="6ad8038d4e3a6a8f95be33f3"
+        data-source="WEB_USER"
+        strategy="lazyOnload"
+      />
       <Hero />
       <Positioning />
       <Clients />
