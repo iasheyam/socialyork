@@ -75,12 +75,11 @@ export interface SiteContent {
     phoneHref: string;
     instagram: string;
   };
-  /**
-   * Long Island business address is on the contract. Per the brief it stays off
-   * the site unless Isti says otherwise -- set this string to render it in the
-   * footer, one line, no other change needed.
-   */
-  address: string | null;
+  /** Registered business details, shown in the footer and on the legal pages. */
+  business: {
+    legalName: string;
+    address: string;
+  };
   hero: {
     lines: [string, string];
     resolve: [string, string];
@@ -182,7 +181,10 @@ export const site: SiteContent = {
     phoneHref: "+14807432551",
     instagram: "https://www.instagram.com/social_york/",
   },
-  address: null,
+  business: {
+    legalName: "SocialYork LLC",
+    address: "609 Centerwood Street, West Babylon, New York, 11704",
+  },
 
   hero: {
     lines: ["New York City is noisy.", "Your brand has a story worth hearing."],

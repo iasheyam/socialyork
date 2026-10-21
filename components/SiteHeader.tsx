@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { site } from "@/content/site";
 import { cn } from "@/lib/cn";
@@ -35,13 +36,14 @@ function MenuIcon({ open }: { open: boolean }) {
  * instead of disappearing.
  */
 export function SiteHeader() {
-  const [visible, setVisible] = useState(false);
+  const isHome = usePathname() === "/";
+  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
       const next = window.scrollY > window.innerHeight * 0.7;
-      setVisible(next);
+      setScrolled(next);
       if (!next) setMenuOpen(false);
     };
     onScroll();
@@ -58,6 +60,8 @@ export function SiteHeader() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
+  // Inner pages are short; the header is always available there.
+  const visible = scrolled || !isHome;
   const tabIndex = visible ? 0 : -1;
   const menuTabIndex = visible && menuOpen ? 0 : -1;
 
@@ -92,7 +96,7 @@ export function SiteHeader() {
             Client Login
           </a>
           <Link
-            href="/#contact"
+            href="/contact"
             tabIndex={tabIndex}
             className="rounded-full bg-gold px-4 py-2 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-void transition-colors hover:bg-gold/90"
           >

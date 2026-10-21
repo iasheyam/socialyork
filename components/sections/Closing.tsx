@@ -1,29 +1,10 @@
-import { ContactLeadForm } from "@/components/sections/ContactLeadForm";
+import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { Section } from "@/components/Section";
 import { site } from "@/content/site";
 
-function InstagramIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-      <rect
-        x="1.5"
-        y="1.5"
-        width="15"
-        height="15"
-        rx="4.5"
-        stroke="currentColor"
-        strokeWidth="1.3"
-      />
-      <circle cx="9" cy="9" r="3.8" stroke="currentColor" strokeWidth="1.3" />
-      <circle cx="13.15" cy="4.85" r="0.9" fill="currentColor" />
-    </svg>
-  );
-}
-
-/** Contact: a lead form (delivered via Formspree), direct contact info, and socials. */
+/** Closing call to action: the contact form lives on /contact. */
 export function Closing() {
-  const { email, phone, phoneHref, instagram } = site.contact;
   return (
     <Section id="contact" center>
       <Reveal className="space-y-10">
@@ -35,41 +16,12 @@ export function Closing() {
           {site.closing.body}
         </p>
 
-        <ContactLeadForm />
-
-        <div className="space-y-2 border-t border-hairline pt-8 font-mono text-sm">
-          <p>
-            <a
-              href={`mailto:${email}`}
-              className="text-current/80 underline-offset-4 hover:underline"
-            >
-              {email}
-            </a>
-          </p>
-          <p>
-            <a
-              href={`tel:${phoneHref}`}
-              className="text-current/80 underline-offset-4 hover:underline"
-            >
-              {phone}
-            </a>
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <p className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-current/60">
-            Follow us
-          </p>
-          <a
-            href={instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="SocialYork on Instagram"
-            className="inline-flex text-current/80 transition-colors hover:text-gold"
-          >
-            <InstagramIcon />
-          </a>
-        </div>
+        <Link
+          href="/contact"
+          className="inline-block rounded-full bg-gold px-7 py-3.5 font-mono text-[0.75rem] uppercase tracking-[0.14em] text-void transition-colors hover:bg-gold/90"
+        >
+          Contact us
+        </Link>
       </Reveal>
     </Section>
   );
