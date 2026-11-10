@@ -20,8 +20,7 @@ export default function Page() {
       <Script
         src="https://widgets.leadconnectorhq.com/loader.js"
         data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
-        data-widget-id="6ad8038d4e3a6a8f95be33f3"
-        data-source="WEB_USER"
+        data-widget-id="6af34e59b488c87e68ad0c81"
         strategy="lazyOnload"
       />
       <Hero />
